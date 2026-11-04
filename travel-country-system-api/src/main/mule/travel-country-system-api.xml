@@ -1,42 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="38a3a2e9-69b0-4a53-a67e-88de209d5def" >
-		<http:listener-connection host="0.0.0.0" port="8082" />
-	</http:listener-config>
-	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="0d246e4b-7b24-4201-948e-60d861c5a3aa" >
-		<http:request-connection protocol="HTTPS" host="api.restcountries.com" port="443" />
-	</http:request-config>
-	<flow name="travel-country-system-apiFlow" doc:id="904b2570-3a28-4c8f-a466-dcf0b936061d" >
-		<http:listener doc:name="Listener" doc:id="3ca296e0-a1e9-43ad-8902-bb52cca87214" config-ref="HTTP_Listener_config" path="/countries/{country}"/>
-		<http:request method="GET" doc:name="Request" doc:id="55ffd4c6-ddb9-475d-b566-3962ca12f330" config-ref="HTTP_Request_configuration" path="#['/countries/v5/names.common/' ++ attributes.uriParams.country]">
-			<http:headers ><![CDATA[#[output application/java
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+      http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+      http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+    <!-- Read API key from config.properties -->
+    <configuration-properties file="config.properties" />
+
+    <!-- HTTP Listener -->
+    <http:listener-config
+        name="HTTP_Listener_config"
+        doc:name="HTTP Listener config">
+        <http:listener-connection
+            host="0.0.0.0"
+            port="${http.port}" />
+    </http:listener-config>
+
+    <!-- REST Countries v5 HTTP Request -->
+    <http:request-config
+        name="HTTP_Request_configuration"
+        doc:name="HTTP Request configuration">
+        <http:request-connection
+            protocol="HTTPS"
+            host="api.restcountries.com"
+            port="443" />
+    </http:request-config>
+
+    <!-- Country System API Flow -->
+    <flow name="travel-country-system-apiFlow">
+
+        <http:listener
+            doc:name="Listener"
+            config-ref="HTTP_Listener_config"
+            path="/countries/{country}" />
+
+        <!-- Call REST Countries v5 -->
+        <http:request
+            method="GET"
+            doc:name="Request"
+            config-ref="HTTP_Request_configuration"
+            path="#['/countries/v5/names.common/' ++ attributes.uriParams.country]">
+
+            <http:headers><![CDATA[#[output application/java
 ---
 {
-	Authorization : "rc_live_8d541ec7fb534c69880b9e9832d73b37"
+    Authorization: "Bearer " ++ p('restcountries.api.key')
 }]]]></http:headers>
-		</http:request>
-		<ee:transform doc:name="Transform Message" doc:id="f92883ce-76be-4e32-b7c0-d09d27bc31bc" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+
+        </http:request>
+
+        <!-- Diagnostic Logger: Log downstream HTTP status -->
+        <logger
+            level="INFO"
+            doc:name="Log REST Countries Response"
+            message="#['REST Countries HTTP Status: ' ++ (attributes.statusCode as String)]" />
+
+        <!-- Transform Country Response -->
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 var country = payload.data.objects[0]
 ---
 {
-  countryName: country.names.common,
-  capitalCity: country.capitals[0].name,
-  region: country.region,
-  population: country.population,
-  officialCurrency: country.currencies[0].name,
-  currencyCode: country.currencies[0].code,
-  flagUrl: country.flag.url_png
+    countryName: country.names.common,
+    capitalCity: country.capitals[0].name,
+    region: country.region,
+    population: country.population,
+    officialCurrency: country.currencies[0].name,
+    currencyCode: country.currencies[0].code,
+    flagUrl: country.flag.url_png
 }]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="40b4d293-1d4d-4aa4-b656-a6d0a6d02396" message="#[payload]"/>
-	</flow>
+            </ee:message>
+        </ee:transform>
+
+        <logger
+            level="INFO"
+            doc:name="Logger"
+            message="#[payload]" />
+
+    </flow>
+
 </mule>
