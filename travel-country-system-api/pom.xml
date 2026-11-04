@@ -7,7 +7,7 @@
 
     <groupId>com.mycompany</groupId>
     <artifactId>travel-country-system-api</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>mule-application</packaging>
     <name>travel-country-system-api</name>
 
@@ -43,11 +43,9 @@
                         <applicationName>travel-country-system-api</applicationName>
                         <replicas>1</replicas>
                         <vCores>0.1</vCores>
-
                         <!-- Jenkins credentials -->
                         <username>${env.ANYPOINT_USERNAME}</username>
                         <password>${env.ANYPOINT_PASSWORD}</password>
-
                     </cloudhub2Deployment>
                 </configuration>
             </plugin>
