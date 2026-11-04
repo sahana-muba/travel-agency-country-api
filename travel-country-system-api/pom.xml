@@ -35,6 +35,7 @@
                     <cloudhub2Deployment>
                         <uri>https://anypoint.mulesoft.com</uri>
                         <provider>MC</provider>
+                        <businessGroupId>2b624f3c-bc06-4d04-90ef-48200b112b5d</businessGroupId>
                         <environment>Sandbox</environment>
                         <target>Cloudhub-US-East-2</target>
                         <muleVersion>${app.runtime}</muleVersion>
@@ -43,6 +44,7 @@
                         <applicationName>travel-country-system-api</applicationName>
                         <replicas>1</replicas>
                         <vCores>0.1</vCores>
+
                         <!-- Jenkins credentials -->
                         <username>${env.ANYPOINT_USERNAME}</username>
                         <password>${env.ANYPOINT_PASSWORD}</password>
