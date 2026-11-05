@@ -18,8 +18,19 @@
         <mule.maven.plugin.version>4.10.1</mule.maven.plugin.version>
     </properties>
 
+    <!-- Anypoint Exchange publishing configuration -->
+    <distributionManagement>
+        <repository>
+            <id>anypoint-exchange-v3</id>
+            <name>Anypoint Exchange</name>
+            <url>https://maven.anypoint.mulesoft.com/api/v3/organizations/2b624f3c-bc06-4d04-90ef-48200b112b5d/maven</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -31,30 +42,38 @@
                 <artifactId>mule-maven-plugin</artifactId>
                 <version>${mule.maven.plugin.version}</version>
                 <extensions>true</extensions>
+
                 <configuration>
                     <cloudhub2Deployment>
+
                         <uri>https://anypoint.mulesoft.com</uri>
                         <provider>MC</provider>
                         <businessGroupId>2b624f3c-bc06-4d04-90ef-48200b112b5d</businessGroupId>
                         <environment>Sandbox</environment>
                         <target>Cloudhub-US-East-2</target>
+
                         <muleVersion>${app.runtime}</muleVersion>
                         <releaseChannel>EDGE</releaseChannel>
                         <javaVersion>17</javaVersion>
+
                         <applicationName>travel-country-system-api</applicationName>
                         <replicas>1</replicas>
                         <vCores>0.1</vCores>
 
-                        <!-- Jenkins credentials -->
-                        <username>${env.ANYPOINT_USERNAME}</username>
-                        <password>${env.ANYPOINT_PASSWORD}</password>
+                        <!-- Connected App authentication -->
+                        <connectedAppClientId>${env.ANYPOINT_CLIENT_ID}</connectedAppClientId>
+                        <connectedAppClientSecret>${env.ANYPOINT_CLIENT_SECRET}</connectedAppClientSecret>
+                        <connectedAppGrantType>client_credentials</connectedAppGrantType>
+
                     </cloudhub2Deployment>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
     <dependencies>
+
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
@@ -68,9 +87,11 @@
             <version>1.2.9</version>
             <classifier>mule-plugin</classifier>
         </dependency>
+
     </dependencies>
 
     <repositories>
+
         <repository>
             <id>anypoint-exchange-v3</id>
             <name>Anypoint Exchange</name>
@@ -84,9 +105,11 @@
             <url>https://repository.mulesoft.org/nexus/repository/releases/</url>
             <layout>default</layout>
         </repository>
+
     </repositories>
 
     <pluginRepositories>
+
         <pluginRepository>
             <id>mulesoft-releases</id>
             <name>MuleSoft Releases Repository</name>
@@ -96,6 +119,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
+
     </pluginRepositories>
 
 </project>
