@@ -48,7 +48,7 @@
             doc:name="Log Requested Country"
             message="#['Incoming country: ' ++ vars.requestedCountry]"/>
 
-        <!-- Call REST Countries API with dynamic query parameter -->
+        <!-- Call REST Countries API with correct element ordering (query-params before headers) -->
         <http:request
             method="GET"
             doc:name="Get Country Details"
@@ -60,7 +60,7 @@
             }]]]></http:query-params>
 
             <http:headers><![CDATA[#[{
-                Authorization: "Bearer " ++ p('restcountries.api.key')
+                Authorization: "Bearer " + p('restcountries.api.key')
             }]]]></http:headers>
 
         </http:request>
