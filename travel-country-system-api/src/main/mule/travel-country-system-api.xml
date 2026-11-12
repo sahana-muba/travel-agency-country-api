@@ -10,10 +10,8 @@
       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
       http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 
-    <!-- Load configuration properties -->
     <configuration-properties file="config.properties"/>
 
-    <!-- HTTP Listener Configuration -->
     <http:listener-config
         name="HTTP_Listener_config"
         doc:name="HTTP Listener config">
@@ -22,7 +20,6 @@
             port="${http.port}"/>
     </http:listener-config>
 
-    <!-- REST Countries API Configuration -->
     <http:request-config
         name="HTTP_Request_configuration"
         doc:name="REST Countries Request Configuration">
@@ -32,20 +29,18 @@
             port="443"/>
     </http:request-config>
 
-    <!-- Country System API Flow -->
     <flow name="travel-country-system-apiFlow">
 
-        <!-- Receive country name -->
         <http:listener
             doc:name="Country API Listener"
             config-ref="HTTP_Listener_config"
             path="/countries/{country}"/>
 
-        <!-- Log incoming request -->
+        <!-- Log the actual incoming country parameter -->
         <logger
             level="INFO"
             doc:name="Log Country API Entry"
-            message="COUNTRY API FLOW REACHED"/>
+            message="#['Requested country: ' ++ attributes.uriParams.country]"/>
 
         <!-- Exact country name lookup -->
         <http:request
@@ -54,20 +49,17 @@
             config-ref="HTTP_Request_configuration"
             path="#['/countries/v5/names.common/' ++ attributes.uriParams.country]">
 
-            <!-- API Authentication -->
             <http:headers><![CDATA[#[{
                 Authorization: "Bearer " ++ p('restcountries.api.key')
             }]]]></http:headers>
 
         </http:request>
 
-        <!-- Log external API response -->
         <logger
             level="INFO"
             doc:name="Log REST Countries Response"
             message="REST COUNTRIES RESPONSE RECEIVED"/>
 
-        <!-- Transform Country Response -->
         <ee:transform doc:name="Transform Country Response">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -86,7 +78,6 @@ var country = payload.data.objects[0]
             </ee:message>
         </ee:transform>
 
-        <!-- Log final response -->
         <logger
             level="INFO"
             doc:name="Log Country Response"
