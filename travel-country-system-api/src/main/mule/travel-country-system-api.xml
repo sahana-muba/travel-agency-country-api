@@ -48,12 +48,16 @@
             doc:name="Log Requested Country"
             message="#['Incoming country: ' ++ vars.requestedCountry]"/>
 
-        <!-- Call REST Countries API -->
+        <!-- Call REST Countries API with dynamic query parameter -->
         <http:request
             method="GET"
             doc:name="Get Country Details"
             config-ref="HTTP_Request_configuration"
-            path="#['/countries/v5/names.common/' ++ vars.requestedCountry]">
+            path="/countries/v5/name">
+
+            <http:query-params><![CDATA[#[{
+                q: vars.requestedCountry
+            }]]]></http:query-params>
 
             <http:headers><![CDATA[#[{
                 Authorization: "Bearer " ++ p('restcountries.api.key')
