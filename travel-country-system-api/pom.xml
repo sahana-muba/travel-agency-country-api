@@ -5,7 +5,8 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>2b624f3c-bc06-4d04-90ef-48200b112b5d</groupId>
+    <!-- Maven project details -->
+    <groupId>49a5c82f-4354-4c4d-934f-9e50875ad682</groupId>
     <artifactId>travel-country-system-api</artifactId>
     <version>1.0.2</version>
     <packaging>mule-application</packaging>
@@ -14,22 +15,25 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <app.runtime>4.12.5</app.runtime>
+
+        <!-- CloudHub 2.0 Runtime -->
+        <app.runtime>4.13.2:7e</app.runtime>
         <mule.maven.plugin.version>4.10.1</mule.maven.plugin.version>
     </properties>
 
-    <!-- Anypoint Exchange publishing configuration -->
+    <!-- Exchange publishing configuration -->
     <distributionManagement>
         <repository>
             <id>anypoint-exchange-v3</id>
             <name>Anypoint Exchange</name>
-            <url>https://maven.anypoint.mulesoft.com/api/v3/organizations/2b624f3c-bc06-4d04-90ef-48200b112b5d/maven</url>
+            <url>https://maven.anypoint.mulesoft.com/api/v3/organizations/49a5c82f-4354-4c4d-934f-9e50875ad682/maven</url>
             <layout>default</layout>
         </repository>
     </distributionManagement>
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -41,16 +45,20 @@
                 <artifactId>mule-maven-plugin</artifactId>
                 <version>${mule.maven.plugin.version}</version>
                 <extensions>true</extensions>
+
                 <configuration>
                     <cloudhub2Deployment>
                         <uri>https://anypoint.mulesoft.com</uri>
                         <provider>MC</provider>
-                        <businessGroupId>2b624f3c-bc06-4d04-90ef-48200b112b5d</businessGroupId>
+
+                        <businessGroupId>49a5c82f-4354-4c4d-934f-9e50875ad682</businessGroupId>
                         <environment>Sandbox</environment>
                         <target>Cloudhub-US-East-2</target>
+
                         <muleVersion>${app.runtime}</muleVersion>
                         <releaseChannel>EDGE</releaseChannel>
                         <javaVersion>17</javaVersion>
+
                         <applicationName>travel-country-system-api</applicationName>
                         <replicas>1</replicas>
                         <vCores>0.1</vCores>
@@ -59,13 +67,16 @@
                         <connectedAppClientId>${env.ANYPOINT_CLIENT_ID}</connectedAppClientId>
                         <connectedAppClientSecret>${env.ANYPOINT_CLIENT_SECRET}</connectedAppClientSecret>
                         <connectedAppGrantType>client_credentials</connectedAppGrantType>
+
                     </cloudhub2Deployment>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
     <dependencies>
+
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
@@ -79,9 +90,11 @@
             <version>1.2.9</version>
             <classifier>mule-plugin</classifier>
         </dependency>
+
     </dependencies>
 
     <repositories>
+
         <repository>
             <id>anypoint-exchange-v3</id>
             <name>Anypoint Exchange</name>
@@ -95,18 +108,22 @@
             <url>https://repository.mulesoft.org/nexus/repository/releases/</url>
             <layout>default</layout>
         </repository>
+
     </repositories>
 
     <pluginRepositories>
+
         <pluginRepository>
             <id>mulesoft-releases</id>
             <name>MuleSoft Releases Repository</name>
             <url>https://repository.mulesoft.org/nexus/repository/releases/</url>
             <layout>default</layout>
+
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
+
     </pluginRepositories>
 
 </project>

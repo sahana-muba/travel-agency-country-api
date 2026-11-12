@@ -10,59 +10,75 @@
       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
       http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 
-    <!-- Read API key from config.properties -->
-    <configuration-properties file="config.properties" />
+    <!-- Load configuration properties -->
+    <configuration-properties file="config.properties"/>
 
-    <!-- HTTP Listener -->
+    <!-- HTTP Listener Configuration -->
     <http:listener-config
         name="HTTP_Listener_config"
         doc:name="HTTP Listener config">
+
         <http:listener-connection
             host="0.0.0.0"
-            port="${http.port}" />
+            port="${http.port}"/>
+
     </http:listener-config>
 
-    <!-- REST Countries v5 HTTP Request -->
+    <!-- REST Countries API Configuration -->
     <http:request-config
         name="HTTP_Request_configuration"
-        doc:name="HTTP Request configuration">
+        doc:name="REST Countries Request Configuration">
+
         <http:request-connection
             protocol="HTTPS"
             host="api.restcountries.com"
-            port="443" />
+            port="443"/>
+
     </http:request-config>
 
     <!-- Country System API Flow -->
     <flow name="travel-country-system-apiFlow">
 
+        <!-- Receive country name -->
         <http:listener
-            doc:name="Listener"
+            doc:name="Country API Listener"
             config-ref="HTTP_Listener_config"
-            path="/countries/{country}" />
+            path="/countries/{country}"/>
 
-        <!-- Call REST Countries v5 -->
+        <!-- Log incoming request -->
+        <logger
+            level="INFO"
+            doc:name="Log Country API Entry"
+            message="COUNTRY API FLOW REACHED"/>
+
+        <!-- Call REST Countries API -->
         <http:request
             method="GET"
-            doc:name="Request"
+            doc:name="Get Country Details"
             config-ref="HTTP_Request_configuration"
-            path="#['/countries/v5/names.common/' ++ attributes.uriParams.country]">
+            path="/countries/v5">
 
-            <http:headers><![CDATA[#[output application/java
----
-{
-    Authorization: "Bearer " ++ p('restcountries.api.key')
-}]]]></http:headers>
+            <!-- API Authentication -->
+            <http:headers><![CDATA[#[{
+                Authorization: "Bearer " ++ p('restcountries.api.key')
+            }]]]></http:headers>
+
+            <!-- Dynamic country query parameter -->
+            <http:query-params><![CDATA[#[{
+                q: attributes.uriParams.country,
+                pretty: "1"
+            }]]]></http:query-params>
 
         </http:request>
 
-        <!-- Diagnostic Logger: Log downstream HTTP status -->
+        <!-- Log external API response -->
         <logger
             level="INFO"
             doc:name="Log REST Countries Response"
-            message="#['REST Countries HTTP Status: ' ++ (attributes.statusCode as String)]" />
+            message="REST COUNTRIES RESPONSE RECEIVED"/>
 
         <!-- Transform Country Response -->
-        <ee:transform doc:name="Transform Message">
+        <ee:transform doc:name="Transform Country Response">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -80,10 +96,11 @@ var country = payload.data.objects[0]
             </ee:message>
         </ee:transform>
 
+        <!-- Log final response -->
         <logger
             level="INFO"
-            doc:name="Logger"
-            message="#[payload]" />
+            doc:name="Log Country Response"
+            message="#[payload]"/>
 
     </flow>
 
