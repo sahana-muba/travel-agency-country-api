@@ -17,23 +17,19 @@
     <http:listener-config
         name="HTTP_Listener_config"
         doc:name="HTTP Listener config">
-
         <http:listener-connection
             host="0.0.0.0"
             port="${http.port}"/>
-
     </http:listener-config>
 
     <!-- REST Countries API Configuration -->
     <http:request-config
         name="HTTP_Request_configuration"
         doc:name="REST Countries Request Configuration">
-
         <http:request-connection
             protocol="HTTPS"
             host="api.restcountries.com"
             port="443"/>
-
     </http:request-config>
 
     <!-- Country System API Flow -->
@@ -51,23 +47,17 @@
             doc:name="Log Country API Entry"
             message="COUNTRY API FLOW REACHED"/>
 
-        <!-- Call REST Countries API -->
+        <!-- Exact country name lookup -->
         <http:request
             method="GET"
             doc:name="Get Country Details"
             config-ref="HTTP_Request_configuration"
-            path="/countries/v5">
+            path="#['/countries/v5/names.common/' ++ attributes.uriParams.country]">
 
             <!-- API Authentication -->
             <http:headers><![CDATA[#[{
                 Authorization: "Bearer " ++ p('restcountries.api.key')
             }]]]></http:headers>
-
-            <!-- Dynamic country query parameter -->
-            <http:query-params><![CDATA[#[{
-                q: attributes.uriParams.country,
-                pretty: "1"
-            }]]]></http:query-params>
 
         </http:request>
 
