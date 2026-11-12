@@ -36,18 +36,24 @@
             config-ref="HTTP_Listener_config"
             path="/countries/{country}"/>
 
-        <!-- Log the actual incoming country parameter -->
+        <!-- Store incoming country name -->
+        <set-variable
+            variableName="requestedCountry"
+            value="#[attributes.uriParams.country]"
+            doc:name="Store Requested Country"/>
+
+        <!-- Log incoming country -->
         <logger
             level="INFO"
-            doc:name="Log Country API Entry"
-            message="#['Requested country: ' ++ attributes.uriParams.country]"/>
+            doc:name="Log Requested Country"
+            message="#['Incoming country: ' ++ vars.requestedCountry]"/>
 
-        <!-- Exact country name lookup -->
+        <!-- Call REST Countries API -->
         <http:request
             method="GET"
             doc:name="Get Country Details"
             config-ref="HTTP_Request_configuration"
-            path="#['/countries/v5/names.common/' ++ attributes.uriParams.country]">
+            path="#['/countries/v5/names.common/' ++ vars.requestedCountry]">
 
             <http:headers><![CDATA[#[{
                 Authorization: "Bearer " ++ p('restcountries.api.key')
@@ -55,11 +61,13 @@
 
         </http:request>
 
+        <!-- Log requested country and actual external response -->
         <logger
             level="INFO"
-            doc:name="Log REST Countries Response"
-            message="REST COUNTRIES RESPONSE RECEIVED"/>
+            doc:name="Log External Country Response"
+            message="#['Requested country: ' ++ vars.requestedCountry ++ ' | External API response: ' ++ write(payload, 'application/json')]"/>
 
+        <!-- Transform Country Response -->
         <ee:transform doc:name="Transform Country Response">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -78,6 +86,7 @@ var country = payload.data.objects[0]
             </ee:message>
         </ee:transform>
 
+        <!-- Log final response -->
         <logger
             level="INFO"
             doc:name="Log Country Response"
