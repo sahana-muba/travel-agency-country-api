@@ -86,6 +86,7 @@ var country = payload.data.objects[0]
 
 ---
 {
+    requestedCountryReceived: vars.requestedCountry,
     countryName: country.names.common,
     capitalCity: country.capitals[0].name,
     region: country.region,
@@ -93,7 +94,8 @@ var country = payload.data.objects[0]
     officialCurrency: country.currencies[0].name,
     currencyCode: country.currencies[0].code,
     flagUrl: country.flag.url_png
-}]]></ee:set-payload>
+}
+]]></ee:set-payload>
             </ee:message>
         </ee:transform>
 
