@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns="http://www.mulesoft.org/schema/mule/core"
@@ -56,24 +55,38 @@
         <logger
             level="INFO"
             doc:name="Log Country Request URL"
-            message="#['Calling REST Countries URL: /countries/v5/names.common/' ++ vars.requestedCountry]"/>
+            message="#[%dw 2.0
+            output application/java
+            ---
+            'Calling REST Countries URL for: ' ++ vars.requestedCountry]"/>
 
-        <!-- Call REST Countries API -->
+        <!-- Call REST Countries API with Bearer authentication -->
         <http:request
             method="GET"
             doc:name="Get Country Details"
             config-ref="HTTP_Request_configuration"
-            path="#['/countries/v5/names.common/' ++ vars.requestedCountry]">
+            path="/countries/v5/name">
+
+            <!-- Authorization header -->
             <http:headers><![CDATA[#[{
-                Authorization: "Bearer " ++ p('restcountries.api.key')
+                'Authorization': 'Bearer ' ++ p('restcountries.api.key')
             }]]]></http:headers>
+
+            <!-- Country query parameter -->
+            <http:query-params><![CDATA[#[{
+                q: vars.requestedCountry
+            }]]]></http:query-params>
+
         </http:request>
 
-        <!-- Log external API response -->
+        <!-- Log external API response safely -->
         <logger
             level="INFO"
             doc:name="Log External Country Response"
-            message="Country API: external response received"/>
+            message="#[%dw 2.0
+            output application/java
+            ---
+            'Country API external response received for ' ++ vars.requestedCountry]"/>
 
         <!-- Transform Country Response -->
         <ee:transform doc:name="Transform Country Response">
@@ -103,5 +116,4 @@ var country = payload.data.objects[0]
             message="#[payload]"/>
 
     </flow>
-
 </mule>
