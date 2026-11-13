@@ -56,10 +56,7 @@
         <logger
             level="INFO"
             doc:name="Log Country Request URL"
-            message="#[%dw 2.0
-            output application/java
-            ---
-            'Calling REST Countries URL for: ' ++ vars.requestedCountry]"/>
+            message="#[ 'Calling REST Countries URL for: ' ++ vars.requestedCountry ]"/>
 
         <!-- Call REST Countries API -->
         <http:request
@@ -84,7 +81,8 @@
         <!-- Transform Country Response -->
         <ee:transform doc:name="Transform Country Response">
             <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+                <ee:set-payload><![CDATA[
+%dw 2.0
 output application/json
 var country = payload.data.objects[0]
 ---
@@ -98,7 +96,7 @@ var country = payload.data.objects[0]
     currencyCode: country.currencies[0].code,
     flagUrl: country.flag.url_png
 }
-]]></ee:set-payload>
+                ]]></ee:set-payload>
             </ee:message>
         </ee:transform>
 
@@ -109,4 +107,5 @@ var country = payload.data.objects[0]
             message="#[payload]"/>
 
     </flow>
+
 </mule>
