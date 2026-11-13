@@ -8,7 +8,7 @@
     <!-- Maven project details -->
     <groupId>49a5c82f-4354-4c4d-934f-9e50875ad682</groupId>
     <artifactId>travel-country-system-api</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>mule-application</packaging>
     <name>travel-country-system-api</name>
 
@@ -33,7 +33,6 @@
 
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -50,15 +49,12 @@
                     <cloudhub2Deployment>
                         <uri>https://anypoint.mulesoft.com</uri>
                         <provider>MC</provider>
-
                         <businessGroupId>49a5c82f-4354-4c4d-934f-9e50875ad682</businessGroupId>
                         <environment>Sandbox</environment>
                         <target>Cloudhub-US-East-2</target>
-
                         <muleVersion>${app.runtime}</muleVersion>
                         <releaseChannel>EDGE</releaseChannel>
                         <javaVersion>17</javaVersion>
-
                         <applicationName>travel-country-system-api</applicationName>
                         <replicas>1</replicas>
                         <vCores>0.1</vCores>
@@ -67,16 +63,13 @@
                         <connectedAppClientId>${env.ANYPOINT_CLIENT_ID}</connectedAppClientId>
                         <connectedAppClientSecret>${env.ANYPOINT_CLIENT_SECRET}</connectedAppClientSecret>
                         <connectedAppGrantType>client_credentials</connectedAppGrantType>
-
                     </cloudhub2Deployment>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
     <dependencies>
-
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
@@ -90,11 +83,9 @@
             <version>1.2.9</version>
             <classifier>mule-plugin</classifier>
         </dependency>
-
     </dependencies>
 
     <repositories>
-
         <repository>
             <id>anypoint-exchange-v3</id>
             <name>Anypoint Exchange</name>
@@ -108,22 +99,18 @@
             <url>https://repository.mulesoft.org/nexus/repository/releases/</url>
             <layout>default</layout>
         </repository>
-
     </repositories>
 
     <pluginRepositories>
-
         <pluginRepository>
             <id>mulesoft-releases</id>
             <name>MuleSoft Releases Repository</name>
             <url>https://repository.mulesoft.org/nexus/repository/releases/</url>
             <layout>default</layout>
-
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
-
     </pluginRepositories>
 
 </project>
