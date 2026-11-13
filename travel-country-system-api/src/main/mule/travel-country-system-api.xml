@@ -12,6 +12,7 @@
 
     <configuration-properties file="config.properties"/>
 
+    <!-- HTTP Listener Configuration -->
     <http:listener-config
         name="HTTP_Listener_config"
         doc:name="HTTP Listener config">
@@ -20,6 +21,7 @@
             port="${http.port}"/>
     </http:listener-config>
 
+    <!-- REST Countries HTTP Request Configuration -->
     <http:request-config
         name="HTTP_Request_configuration"
         doc:name="REST Countries Request Configuration">
@@ -29,14 +31,16 @@
             port="443"/>
     </http:request-config>
 
+    <!-- Country System API Flow -->
     <flow name="travel-country-system-apiFlow">
 
+        <!-- Receive country name -->
         <http:listener
             doc:name="Country API Listener"
             config-ref="HTTP_Listener_config"
             path="/countries/{country}"/>
 
-        <!-- Store incoming country name -->
+        <!-- Store requested country -->
         <set-variable
             variableName="requestedCountry"
             value="#[attributes.uriParams.country]"
@@ -48,24 +52,20 @@
             doc:name="Log Requested Country"
             message="#['Incoming country: ' ++ vars.requestedCountry]"/>
 
-        <!-- Call REST Countries API with correct element ordering (query-params before headers) -->
+        <!-- Call REST Countries API -->
         <http:request
             method="GET"
             doc:name="Get Country Details"
             config-ref="HTTP_Request_configuration"
-            path="/countries/v5/name">
-
-            <http:query-params><![CDATA[#[{
-                q: vars.requestedCountry
-            }]]]></http:query-params>
+            path="#['/countries/v5/names.common/' ++ vars.requestedCountry]">
 
             <http:headers><![CDATA[#[{
-                Authorization: "Bearer " + p('restcountries.api.key')
+                Authorization: "Bearer " ++ p('restcountries.api.key')
             }]]]></http:headers>
 
         </http:request>
 
-        <!-- Log requested country and actual external response -->
+        <!-- Log external API response -->
         <logger
             level="INFO"
             doc:name="Log External Country Response"
@@ -76,7 +76,9 @@
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
+
 var country = payload.data.objects[0]
+
 ---
 {
     countryName: country.names.common,
