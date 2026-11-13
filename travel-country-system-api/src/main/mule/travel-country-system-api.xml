@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns="http://www.mulesoft.org/schema/mule/core"
@@ -51,7 +52,7 @@
             doc:name="Log Requested Country"
             message="#['Incoming country: ' ++ vars.requestedCountry]"/>
 
-        <!-- NEW: Log exact external API request path -->
+        <!-- Log exact external API request path -->
         <logger
             level="INFO"
             doc:name="Log Country Request URL"
@@ -63,18 +64,16 @@
             doc:name="Get Country Details"
             config-ref="HTTP_Request_configuration"
             path="#['/countries/v5/names.common/' ++ vars.requestedCountry]">
-
             <http:headers><![CDATA[#[{
                 Authorization: "Bearer " ++ p('restcountries.api.key')
             }]]]></http:headers>
-
         </http:request>
 
         <!-- Log external API response -->
         <logger
             level="INFO"
             doc:name="Log External Country Response"
-            message="#['Requested country: ' ++ vars.requestedCountry ++ ' | External API response: ' ++ write(payload, 'application/json')]"/>
+            message="#[output text/plain --- 'Requested country: ' ++ (vars.requestedCountry as String) ++ ' | External API response: ' ++ write(payload, 'application/json')]"/>
 
         <!-- Transform Country Response -->
         <ee:transform doc:name="Transform Country Response">
@@ -83,7 +82,6 @@
 output application/json
 
 var country = payload.data.objects[0]
-
 ---
 {
     requestedCountryReceived: vars.requestedCountry,
