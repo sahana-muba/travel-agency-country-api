@@ -73,14 +73,13 @@
         <logger
             level="INFO"
             doc:name="Log External Country Response"
-            message="#[output text/plain --- 'Requested country: ' ++ (vars.requestedCountry as String) ++ ' | External API response: ' ++ write(payload, 'application/json')]"/>
+            message="Country API: external response received"/>
 
         <!-- Transform Country Response -->
         <ee:transform doc:name="Transform Country Response">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
-
 var country = payload.data.objects[0]
 ---
 {
