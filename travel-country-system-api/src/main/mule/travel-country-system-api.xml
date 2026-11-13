@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns="http://www.mulesoft.org/schema/mule/core"
@@ -51,6 +50,12 @@
             level="INFO"
             doc:name="Log Requested Country"
             message="#['Incoming country: ' ++ vars.requestedCountry]"/>
+
+        <!-- NEW: Log exact external API request path -->
+        <logger
+            level="INFO"
+            doc:name="Log Country Request URL"
+            message="#['Calling REST Countries URL: /countries/v5/names.common/' ++ vars.requestedCountry]"/>
 
         <!-- Call REST Countries API -->
         <http:request
